@@ -1,9 +1,8 @@
 {
   "name": "whaty-player",
   "description": "This is a custom player based on VideoJS",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "author": "Finn <2497752479@qq.com>",
-  "license": "MIT",
   "private": false,
   "main": "dist/whaty-player.js",
   "scripts": {
@@ -16,20 +15,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yangling423/play-video.git"
+    "url": "git+https://github.com/yangling423/whaty-player.git"
   },
-  "homepage": "https://github.com/yangling423/play-video#readme",
+  "homepage": "https://github.com/yangling423/whaty-player#readme",
   "keywords": [
     "vue",
     "video",
     "whaty",
     "whaty-player",
     "videojs"
-  ],
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
   ],
   "devDependencies": {
     "babel-core": "^6.26.0",
@@ -50,5 +44,14 @@
     "vue-template-compiler": "^2.4.4",
     "webpack": "^3.6.0",
     "webpack-dev-server": "^2.9.1"
-  }
+  },
+  "engines": {
+    "node": ">= 6.0.0",
+    "npm": ">= 3.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
 }
