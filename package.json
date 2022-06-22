@@ -1,7 +1,7 @@
 {
   "name": "whaty-player",
   "description": "This is a custom player based on VideoJS",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "author": "Finn <2497752479@qq.com>",
   "private": false,
   "main": "dist/whaty-player.js",
@@ -28,7 +28,6 @@
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
-    "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.0",
     "babel-preset-stage-3": "^6.24.1",
     "cross-env": "^5.0.5",

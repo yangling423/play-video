@@ -26,7 +26,7 @@
           <span @click="changePlayStatus()">&#xe87c;</span>
         </div>
       </div>
-      <div class="play-video-bottom">
+      <div class="pv-video-bottom">
         <!--进度条-->
         <div class="pv-progress-wrap" :style="{'cursor': ban_seek === 'on' ? 'unset' : 'pointer'}">
           <!--帧信息展示-->
@@ -132,7 +132,6 @@ import md5 from 'js-md5'
 import request from './request'
 import config from '../package.json'
 import 'video.js/dist/video-js.css'
-import 'babel-polyfill'
 import langObj from './lang'
 import qs from 'qs'
 
@@ -196,7 +195,7 @@ export default {
     // 是否禁止拖拽进度条
     ban_seek: {
       type: String,
-      default: off
+      default: 'off'
     },
     // 播放开始时间
     watchStartTime: Number,
@@ -307,7 +306,7 @@ export default {
       return config.version || '1.0.0'
     },
     videoUrl () {
-      return '/api/video/play/m3u8/' + this.definitionObj.id || this.vid
+      return 'http://shc02.frp.o-learn.cn/api/video/play/m3u8/' + this.definitionObj.id || this.vid
     },
     isMobile () {
       return navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
@@ -385,6 +384,7 @@ export default {
         // 监听播放
         player.on('play', () => {
           this.isPlaying = true
+          this.showCover = false
           this.startPosition = this.getCurrentTime()
           this.clearPlayRecordTimer()
           this.playRecord('play')
@@ -400,6 +400,7 @@ export default {
         // 监听暂停
         player.on('pause', () => {
           this.isPlaying = false
+          this.showCover = false
           this.playRecord('pause')
           this.clearPlayRecordTimer()
           this.hideMarquee()
@@ -458,7 +459,6 @@ export default {
     },
     // 开始/暂停播放
     changePlayStatus () {
-      this.showCover = false
       if (this.isPlaying) {
         this.pauseVideo()
       } else {
@@ -589,10 +589,10 @@ export default {
             })
             // options
             if (typeof val === 'object') {
-              player.options = options
-              this.seekVideo(options.watchStartTime)
+              player.options = val
+              this.seekVideo(val.watchStartTime)
             }
-            player.playbackRate(this.speedNum)
+            player.playbackRate(typeof val === 'object' && val.speed ? val.speed : this.speedNum)
           }
         }).catch(errorMsg => {
           this.whatyPlayErrorMsg = errorMsg
@@ -1018,7 +1018,7 @@ export default {
           display: flex;
           align-items: center;
           justify-content: center;
-          font-family: 'iconfont';
+          font-family: 'iconfont' !important;
           background-size: 100% 100%;
           background-repeat: no-repeat;
           &>span {
@@ -1039,7 +1039,7 @@ export default {
           visibility: visible !important;
           color: #ffffff;
           &>.pv-log-errorIcon {
-            font-family: 'iconfont';
+            font-family: 'iconfont' !important;
             font-size: 30px;
             position: absolute;
             top: 50%;
@@ -1069,7 +1069,7 @@ export default {
           white-space: nowrap;
         }
       }
-      &>.play-video-bottom {
+      &>.pv-video-bottom {
         position: absolute;
         left: 0;
         right: 0;
@@ -1172,7 +1172,9 @@ export default {
             height: 100%;
             font-size: 14px;
             margin: 0 10px;
-            font-family: 'iconfont';
+            font-family: 'iconfont' !important;
+            white-space: nowrap;
+            width: auto;
             &.text-sm {
               font-size: 12px;
             }

@@ -1,11 +1,11 @@
-import PlayVideoComponent from './play-video'
+import WhatyPlayerComponent from './whaty-player'
 
-const playVideo = {
+const whatyPlayer = {
   install: function (Vue) {
     if (typeof window !== 'undefined' && window.Vue) {
       Vue = window.Vue
     }
-    Vue.component('PlayVideo', PlayVideoComponent)
+    Vue.component('WhatyPlayer', WhatyPlayerComponent)
   }
 }
-export default playVideo
+export default whatyPlayer
