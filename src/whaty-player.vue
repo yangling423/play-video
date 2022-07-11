@@ -22,7 +22,7 @@
           <div class="pv-log-errorIcon">&#xe656;</div>
           <div class="pv-log-errormsg">{{videoPlayError}}</div>
         </div>
-        <div class="pv-cover" v-if="showCover" :style="`background-image: url(${poster || playInfo.basicInfo.thumbnail})`">
+        <div class="pv-cover" v-if="showCover" :style="`background-image: url(${poster || (playInfo.basicInfo ? playInfo.basicInfo.thumbnail : '')})`">
           <span @click="changePlayStatus()">&#xe87c;</span>
         </div>
       </div>
@@ -140,10 +140,7 @@ export default {
   name: 'PlayVideo',
   props: {
     // 音视频Id
-    vid: {
-      type: String,
-      default: '4029819b8001b788018001b861dc0000'
-    },
+    vid: String,
     width: {
       type: String,
       default: '100%'
@@ -176,10 +173,7 @@ export default {
       default: true
     },
     // 播放器封面
-    poster: {
-      type: String,
-      default: 'http://ylf01.frp.o-learn.cn/resource/image/2f1e8bc4186bd58bcd6ed4d434ec7e120842f6275546bef614a4ac9b65f9ddc8f23b7268ffd29ec2a357ac5891dbc0c847cab713ff44e8403d9b8008e073380cdaade09516c63c180bde04519e094ec8'
-    },
+    poster: String,
     // 是否自动播放
     autoplay: Boolean,
     // 是否循环播放
@@ -220,16 +214,9 @@ export default {
     },
     playSafeUrl: {
       type: String,
-      default: '/api/video/play/playToken'
+      required: true
     },
-    playSafeData: {
-      type: Object,
-      default: () => {
-        return {
-          vid: this.vid
-        }
-      }
-    },
+    playSafeData: Object,
     ITSupport: {
       type: Object,
       default: () => {
@@ -352,6 +339,9 @@ export default {
       }, () => {
         videoJs.Hls.xhr.beforeRequest = (options) => {
           if (!this.isMobile) {
+            if (!options.uri.startsWith('key://')) {
+              return
+            }
             options.uri = `${options.uri}?deviceType=pc&token=${this.token}`
           }
         }
@@ -872,34 +862,24 @@ export default {
     getVideoToken (vid) {
       let that = this
       return new Promise((resolve, reject) => {
-        // 测试需要，实际业务平台调用本第三方
-        let ts = moment().valueOf()
-        let userId = 'afj3sd32'
+        let params = {vid}
+        Object.assign(params, that.playSafeData || {})
         request.send(that.playSafeUrl, {
           method: 'POST',
-          body: `sign=${md5(`sdfhue2skl23f4ts${ts}userId${userId}videoId${vid}viewerId${that.viewerInfo.id}sdfhue2skl23f4`)}&ts=${ts}&userId=${userId}&videoId=${vid}&viewerId=${that.viewerInfo.id}`,
+          body: qs.stringify(params),
           success (playSafeRes) {
             playSafeRes = JSON.parse(playSafeRes)
-            that.token = playSafeRes.data.token
-            resolve()
+            if (playSafeRes.token) {
+              that.token = playSafeRes.token
+              resolve()
+            } else {
+              reject(playSafeRes.message || '获取加密视频凭证失败')
+            }
           },
           error (errorRes) {
             reject(errorRes || '获取加密视频凭证失败')
           }
         })
-        // 正式代码
-        // request.send(that.playSafeUrl, {
-        //   method: 'POST',
-        //   body: qs.stringify(that.playSafeData),
-        //   success (playSafeRes) {
-        //     playSafeRes = JSON.parse(playSafeRes)
-        //     that.token = playSafeRes.data.token
-        //     resolve()
-        //   },
-        //   error (errorRes) {
-        //     reject(errorRes || '获取加密视频凭证失败')
-        //   }
-        // })
       })
     },
     disposePlay () {
@@ -1067,6 +1047,13 @@ export default {
           opacity: .01;
           font-size: 14px;
           white-space: nowrap;
+        }
+        @media screen and (max-width: 420px) {
+          .pv-cover {
+            &>span {
+              font-size: 28px;
+            }
+          }
         }
       }
       &>.pv-video-bottom {
@@ -1288,6 +1275,26 @@ export default {
           &.pv-controls-focus {
             height: $controlsFocusHeight;
             overflow: unset;
+          }
+          @media screen and (max-width: 420px) {
+            .pv-iconfont {
+              margin: 0;
+            }
+            .pv-controls-left {
+              left: 10px;
+              .pv-time-wrap {
+                margin-left: 0;
+              }
+            }
+            .pv-controls-right {
+              right: 10px;
+              &>.pv-component-wrap {
+                display: none;
+                &:last-child {
+                  display: block;
+                }
+              }
+            }
           }
         }
         &:hover {
